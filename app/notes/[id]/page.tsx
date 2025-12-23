@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           alt: note.title,
         },
       ],
-      type: 'article',
+      type: 'website',
     },
   };
 }
