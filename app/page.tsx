@@ -17,16 +17,16 @@ export default function Home() {
             browsing notes. With support for keyword search and structured
             organization, NoteHub offers a streamlined experience for anyone who
             values clarity and productivity.
-            {/* <Image
-              src="https://ac.goit.global/fullstack/react/notehub-og-meta.jpg"
-              alt="NoteHub"
-              width={500}
-              height={400}
-              sizes="(max-width: 768px) 100vw, 50vw"
-  priority   // зображення завантажується одразу, без lazy loading
-  placeholder="blur"    //  додає ефект розмиття на час завантаження
-            /> */}
           </p>
+          {/* <Image
+            src="https://ac.goit.global/fullstack/react/notehub-og-meta.jpg"
+            alt="NoteHub"
+            width={500}
+            height={400}
+            sizes="(max-width: 768px) 100vw, 50vw"
+            priority // зображення завантажується одразу, без lazy loading
+            placeholder="blur" //  додає ефект розмиття на час завантаження
+          /> */}
         </div>
       </main>
     </div>

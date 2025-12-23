@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: `Note: ${note.title}`,
       description: note.content.slice(0, 100),
-      url: `https://notehub.com/notes/${id}`,
+      // url: `https://notehub.com/notes/${id}`,
       siteName: 'NoteHub',
       images: [
         {
@@ -38,14 +38,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function NoteDetails({ params }: Props) {
   const { id } = await params;
-  console.log('note id:', id);
+  console.log('note id:', Number.parseInt(id, 10));
   if (id === 'mama') {
     notFound();
   }
   const queryClient = new QueryClient();
   // 2. Префетч для кешу (не заміняє отримання note!)
   await queryClient.prefetchQuery({
-    queryKey: ['note', id],
+    queryKey: ['note', Number.parseInt(id, 10)],
     queryFn: () => fetchNoteById(id),
   });
 
