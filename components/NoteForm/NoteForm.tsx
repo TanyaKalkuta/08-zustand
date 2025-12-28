@@ -6,6 +6,7 @@ import { createNote } from '@/lib/api';
 import type { NoteTag } from '../../types/note';
 import { useRouter } from 'next/navigation';
 import { useNoteDraftStore } from '@/lib/store/noteStore';
+import { useState } from 'react';
 
 interface NoteFormValues {
   title: string;
@@ -30,7 +31,8 @@ export default function NoteForm() {
   const queryClient = useQueryClient();
   // 2. Викликаємо хук і отримуємо значення
   const { draft, setDraft, clearDraft } = useNoteDraftStore();
-
+  //Додаємо state для помилок
+  const [errors, setErrors] = useState<Record<string, string>>({});
   // 3. Оголошуємо функцію для onChange щоб при зміні будь-якого
   // елемента форми оновити чернетку нотатки в сторі
   const handleChange = (
@@ -38,10 +40,16 @@ export default function NoteForm() {
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
+    const { name, value } = event.target;
     // 4. Коли користувач змінює будь-яке поле форми — оновлюємо стан
     setDraft({
       ...draft,
-      [event.target.name]: event.target.value,
+      [name]: value,
+    });
+    setErrors(prev => {
+      const copy = { ...prev };
+      delete copy[name];
+      return copy;
     });
   };
 
@@ -66,23 +74,23 @@ export default function NoteForm() {
       content: formData.get('content') as string,
       tag: formData.get('tag') as NoteTag,
     };
-    mutate(values);
-    // try {
-    //   setErrors({});
-    //   await validationSchema.validate(values, { abortEarly: false });
-    //   mutate(values);
-    // } catch (err) {
-    //   if (err instanceof Yup.ValidationError) {
-    //     const formErrors: Record<string, string> = {};
-    //     err.inner.forEach((e: Yup.ValidationError) => {
-    //       if (e.path) formErrors[e.path] = e.message;
-    //     });
-    //     setErrors(formErrors);
-    //   }
-    // }
+
+    try {
+      setErrors({}); // очищаємо старі помилки
+      await validationSchema.validate(values, { abortEarly: false });
+      mutate(values);
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        const formErrors: Record<string, string> = {};
+        err.inner.forEach((e: Yup.ValidationError) => {
+          if (e.path) formErrors[e.path] = e.message;
+        });
+        setErrors(formErrors);
+      }
+    }
   };
 
-  // 6. До кожного елемента додаємо defaultValue та onChange
+  // 6. До кожного елемента додаємо value та onChange
   // щоб задати початкове значення із чернетки
   // та при зміні оновити чернетку в сторі
   return (
@@ -97,7 +105,7 @@ export default function NoteForm() {
           name="title"
           className={css.input}
         />
-        {/* {errors.title && <span className={css.error}>{errors.title}</span>}{' '} */}
+        {errors.title && <span className={css.error}>{errors.title}</span>}
       </div>
 
       <div className={css.formGroup}>
@@ -110,7 +118,7 @@ export default function NoteForm() {
           rows={8}
           className={css.textarea}
         />
-        {/* {errors.content && <span className={css.error}>{errors.content}</span>} */}
+        {errors.content && <span className={css.error}>{errors.content}</span>}
       </div>
 
       <div className={css.formGroup}>
@@ -129,7 +137,7 @@ export default function NoteForm() {
           <option value="Meeting">Meeting</option>
           <option value="Shopping">Shopping</option>
         </select>
-        {/* {errors.tag && <span className={css.error}>{errors.tag}</span>} */}
+        {errors.tag && <span className={css.error}>{errors.tag}</span>}
       </div>
 
       <div className={css.actions}>
